@@ -1,0 +1,180 @@
+all.png
+size: 1022, 1860
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+ads_btn_blur
+  rotate: false
+  xy: 428, 684
+  size: 238, 238
+  orig: 238, 238
+  offset: 0, 0
+  index: -1
+ads_check
+  rotate: false
+  xy: 312, 280
+  size: 190, 190
+  orig: 190, 190
+  offset: 0, 0
+  index: -1
+arrow_purchase
+  rotate: false
+  xy: 926, 2
+  size: 74, 35
+  orig: 74, 35
+  offset: 0, 0
+  index: -1
+arrow_subscription
+  rotate: false
+  xy: 2, 39
+  size: 74, 36
+  orig: 74, 36
+  offset: 0, 0
+  index: -1
+button_click
+  rotate: false
+  xy: 2, 1407
+  size: 451, 451
+  orig: 451, 451
+  offset: 0, 0
+  index: -1
+click
+  rotate: false
+  xy: 668, 684
+  size: 323, 323
+  orig: 323, 323
+  offset: 0, 0
+  index: -1
+cost_purchase
+  rotate: false
+  xy: 2, 107
+  size: 213, 127
+  orig: 213, 127
+  offset: 0, 0
+  index: -1
+cost_subscription
+  rotate: false
+  xy: 217, 107
+  size: 213, 132
+  orig: 213, 132
+  offset: 0, 0
+  index: -1
+hand
+  rotate: false
+  xy: 78, 39
+  size: 60, 60
+  orig: 60, 60
+  offset: 0, 0
+  index: -1
+item_check
+  rotate: false
+  xy: 386, 472
+  size: 210, 210
+  orig: 210, 210
+  offset: 0, 0
+  index: -1
+item_close
+  rotate: false
+  xy: 598, 472
+  size: 210, 210
+  orig: 210, 210
+  offset: 0, 0
+  index: -1
+item_def
+  rotate: false
+  xy: 810, 472
+  size: 210, 210
+  orig: 210, 210
+  offset: 0, 0
+  index: -1
+leaderboard_def
+  rotate: false
+  xy: 699, 107
+  size: 153, 171
+  orig: 153, 171
+  offset: 0, 0
+  index: -1
+leaderboard_press
+  rotate: false
+  xy: 854, 107
+  size: 153, 171
+  orig: 153, 171
+  offset: 0, 0
+  index: -1
+menu_def
+  rotate: false
+  xy: 2, 280
+  size: 153, 171
+  orig: 153, 171
+  offset: 0, 0
+  index: -1
+menu_press
+  rotate: false
+  xy: 157, 280
+  size: 153, 171
+  orig: 153, 171
+  offset: 0, 0
+  index: -1
+panel_ads_turn_off
+  rotate: false
+  xy: 2, 684
+  size: 424, 210
+  orig: 424, 210
+  offset: 0, 0
+  index: -1
+panel_click
+  rotate: false
+  xy: 432, 107
+  size: 265, 143
+  orig: 265, 143
+  offset: 0, 0
+  index: -1
+panel_music_sound
+  rotate: false
+  xy: 2, 1009
+  size: 922, 396
+  orig: 922, 396
+  offset: 0, 0
+  index: -1
+progress
+  rotate: false
+  xy: 140, 39
+  size: 747, 66
+  orig: 747, 66
+  offset: 0, 0
+  index: -1
+purchase_def
+  rotate: false
+  xy: 504, 280
+  size: 190, 190
+  orig: 190, 190
+  offset: 0, 0
+  index: -1
+purchase_press
+  rotate: false
+  xy: 696, 280
+  size: 190, 190
+  orig: 190, 190
+  offset: 0, 0
+  index: -1
+separator
+  rotate: false
+  xy: 2, 2
+  size: 922, 3
+  orig: 922, 3
+  offset: 0, 0
+  index: -1
+subscription_def
+  rotate: false
+  xy: 2, 472
+  size: 190, 190
+  orig: 190, 190
+  offset: 0, 0
+  index: -1
+subscription_press
+  rotate: false
+  xy: 194, 472
+  size: 190, 190
+  orig: 190, 190
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,7 @@
+alias: uikwqjedashgd7asdbg
+pass:  ioj5gqwebsahdxhcban
+
+policy: https://doc-hosting.flycricket.io/uxo-monaxa-privacy-policy/f0921680-5e9f-4590-8ba1-918812bfe1ef/privacy
+terms:  https://doc-hosting.flycricket.io/uxo-monaxa-terms-of-use/02376fc4-dc44-4fe0-9248-b14a5661da2d/terms
+
+https://jade-tiramisu-a5b821.netlify.app/app-ads.txt
