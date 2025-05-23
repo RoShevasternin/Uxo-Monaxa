@@ -1,0 +1,8 @@
+<resources>
+    <style name="Base.Theme.UxoMonaxa" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+
+    <style name="Theme.UxoMonaxa" parent="Base.Theme.UxoMonaxa"/>
+</resources>
