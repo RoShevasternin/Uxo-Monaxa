@@ -8,6 +8,7 @@
     import com.uxo.monax.game.utils.advanced.preRenderGroup.FboPreRender
     import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
     import com.uxo.monax.game.utils.disposeAll
+    import com.uxo.monax.util.log
 
     class AMaskGroup(
         override val screen: AdvancedScreen,
@@ -51,7 +52,7 @@
         }
 
         override fun preRender(batch: Batch, parentAlpha: Float) {
-            if (shaderProgram == null) return
+            if (shaderProgram == null) throw Exception("Error preRender: ${this::class.simpleName}")
 
             super.preRender(batch, parentAlpha)
         }

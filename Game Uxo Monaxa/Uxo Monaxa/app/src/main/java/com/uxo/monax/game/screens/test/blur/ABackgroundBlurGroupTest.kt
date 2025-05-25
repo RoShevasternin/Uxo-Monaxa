@@ -3,7 +3,6 @@ package com.uxo.monax.game.screens.test.blur
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
@@ -13,13 +12,11 @@ import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.advanced.preRenderGroup.FboPreRender
 import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
 import com.uxo.monax.game.utils.disposeAll
+import com.uxo.monax.util.log
 
 class ABackgroundBlurGroupTest(
     override val screen: AdvancedScreen,
-): PreRenderableGroup() {
-
-    private val aBlurGroup = ABlurGroupTest(screen)
-    //private val aMaskGroup = AMaskGroup(screen, texture)
+): ABlurGroupTest(screen) {
 
     private var fboSceneBack: FrameBuffer?   = null
     private var fboSceneUI  : FrameBuffer?   = null
@@ -32,30 +29,13 @@ class ABackgroundBlurGroupTest(
     private val groupPosition = Vector2()
     private val tmpVector2    = Vector2(0f, 0f)
 
-    var radiusBlur = 0f
-        set(value) {
-            aBlurGroup.radiusBlur = value
-            field = value
-        }
-
     override fun addActorsOnGroup() {
         createFrameBuffer()
-        addAndFillActor(aBlurGroup)
-
-        //aMaskGroup.addAndFillActor(aBlurGroup)
-    }
-
-    override fun getFboPreRender() = object : FboPreRender {
-        override fun renderFboGroup(batch: Batch, combinedAlpha: Float) {}
-        override fun applyEffect(batch: Batch, combinedAlpha: Float) {}
-
-        override fun renderFboResult(batch: Batch, combinedAlpha: Float) {
-            batch.draw(aBlurGroup.textureResult, 0f, 0f, width, height)
-        }
+        super.addActorsOnGroup()
     }
 
     override fun preRender(batch: Batch, parentAlpha: Float) {
-        if (fboSceneBack == null || fboSceneUI == null || fboScene == null) return
+        if (fboSceneBack == null || fboSceneUI == null || fboScene == null) throw Exception("Error preRender: ${this::class.simpleName}")
 
         batch.end()
 
@@ -63,7 +43,7 @@ class ABackgroundBlurGroupTest(
         captureScreenUI(batch)
         captureScreenAll(batch)
 
-        aBlurGroup.textureRegionBlur = textureScene
+        textureRegionBlur = textureScene
 
         batch.begin()
 
@@ -95,7 +75,7 @@ class ABackgroundBlurGroupTest(
 
         // 1. Захоплюємо всю сцену до рендеру групи
         fboSceneBack!!.begin()
-        ScreenUtils.clear(Color.CLEAR)
+        ScreenUtils.clear(Color.CLEAR, true)
 
         // Отримуємо екранні координати (перетворюємо їх у пікселі)
         val bottomLeft = Vector2(groupPosition.x, groupPosition.y)
@@ -134,7 +114,7 @@ class ABackgroundBlurGroupTest(
 
         // 1. Захоплюємо всю сцену до рендеру групи
         fboSceneUI!!.begin()
-        ScreenUtils.clear(Color.CLEAR)
+        ScreenUtils.clear(Color.CLEAR, true)
 
         camera.setToOrtho(false, width, height)
         camera.position.set(groupPosition.x + (width / 2f), groupPosition.y + (height / 2f), 0f)
@@ -144,9 +124,16 @@ class ABackgroundBlurGroupTest(
         batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE)
 
         batch.withMatrix(camera.combined, identityMatrix) {
-            isVisible = false
-            screen.stageUI.root.draw(batch, 1f)
-            isVisible = true
+            log("parent = ${parent == screen.stageUI.root}")
+            if (parent == screen.stageUI.root) {
+                isVisible = false
+                screen.stageUI.root.draw(batch, 1f)
+                isVisible = true
+            } else {
+                parent.isVisible = false
+                screen.stageUI.root.draw(batch, 1f)
+                parent.isVisible = true
+            }
         }
 
         batch.end()
@@ -155,7 +142,7 @@ class ABackgroundBlurGroupTest(
 
     private fun captureScreenAll(batch: Batch) {
         fboScene!!.begin()
-        ScreenUtils.clear(Color.CLEAR)
+        ScreenUtils.clear(Color.CLEAR, true)
 
         camera.setToOrtho(false, width, height)
         camera.position.set(width / 2f, height / 2f, 0f)

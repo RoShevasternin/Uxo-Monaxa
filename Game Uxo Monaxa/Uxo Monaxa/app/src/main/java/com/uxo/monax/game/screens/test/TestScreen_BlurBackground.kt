@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
 import com.uxo.monax.game.actors.shader.AMaskGroup
+import com.uxo.monax.game.screens.test.blur.ABackgroundBlurGroupTest
 import com.uxo.monax.game.screens.test.blur.ABlurGroupTest
 import com.uxo.monax.game.utils.Acts
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
@@ -32,7 +33,7 @@ class TestScreen_BlurBackground: AdvancedScreen() {
     private val imgBtn   = Image(gdxGame.assetsAll.menu_press)
     private val imgTest  = Image(gdxGame.assetsAll.purchase_def)
 
-    private val shaderGroup = ABlurGroupTest(this)
+    private val shaderGroup = ABackgroundBlurGroupTest(this) //ABlurGroupTest(this)
 
     override fun show() {
         //setBackBackground(gdxGame.assetsLoader.BACKGROUND.region)
@@ -100,11 +101,11 @@ class TestScreen_BlurBackground: AdvancedScreen() {
         addActor(tmpG)
         tmpG.setBounds(200f, 300f, 700f, 300f)
         tmpG.debug()
-        shaderGroup.setBounds(100f, 0f, 200f, 200f)
-        tmpG.addActor(shaderGroup)
+        //shaderGroup.setBounds(100f, 0f, 400f, 400f)
+        //tmpG.addActor(shaderGroup)
 
-        //addActor(shaderGroup)
-        //shaderGroup.setBounds(190f, 65f, 700f, 700f)
+        addActor(shaderGroup)
+        shaderGroup.setBounds(190f, 65f, 700f, 700f)
         shaderGroup.debug()
 
         //tmpG.setOrigin(Align.center)

@@ -1,12 +1,10 @@
 package com.uxo.monax.game.utils.advanced
 
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
+import com.uxo.monax.game.utils.advanced.preRenderGroup.renderPreRenderables
 
 open class AdvancedStage(viewport: Viewport) : Stage(viewport) {
 
@@ -36,21 +34,10 @@ open class AdvancedStage(viewport: Viewport) : Stage(viewport) {
         act()
 
         batch.begin()
-        actors.forEach { renderPreRenderables(it, batch) } // 🧠 Попередній рендеринг FBO-груп
+        actors.forEach { renderPreRenderables(it, batch, 1f) } // 🧠 Попередній рендеринг FBO-груп
         batch.end()
 
         draw()
-    }
-
-    private fun renderPreRenderables(actor: Actor, batch: Batch) {
-        when(actor) {
-            is PreRenderableGroup -> {
-                actor.preRender(batch, 1f)
-            }
-            is Group -> {
-                actor.children.forEach { renderPreRenderables(it, batch) }
-            }
-        }
     }
 
     override fun dispose() {

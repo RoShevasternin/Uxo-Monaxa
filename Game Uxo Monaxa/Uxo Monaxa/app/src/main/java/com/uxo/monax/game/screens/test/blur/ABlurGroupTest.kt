@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
@@ -13,8 +14,9 @@ import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.advanced.preRenderGroup.FboPreRender
 import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
 import com.uxo.monax.game.utils.disposeAll
+import com.uxo.monax.util.log
 
-class ABlurGroupTest(
+open class ABlurGroupTest(
     override val screen: AdvancedScreen,
     var textureRegionBlur: TextureRegion? = null,
 ): PreRenderableGroup() {
@@ -57,6 +59,8 @@ class ABlurGroupTest(
         }
 
         override fun applyEffect(batch: Batch, combinedAlpha: Float) {
+            batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
             batch.applyBlur(fboBlurH, textureGroup, 1f, 0f)
             batch.applyBlur(fboBlurV, textureBlurH, 0f, 1f)
 
@@ -78,7 +82,7 @@ class ABlurGroupTest(
     override fun preRender(batch: Batch, parentAlpha: Float) {
         if (shaderProgram == null ||
             fboBlurH      == null || fboBlurV == null
-        ) return
+        ) throw Exception("Error preRender: ${this::class.simpleName}")
 
         super.preRender(batch, parentAlpha)
     }
@@ -112,8 +116,6 @@ class ABlurGroupTest(
         ScreenUtils.clear(Color.CLEAR, true)
         begin()
 
-        setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
-
         shader = shaderProgram
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0)
         textureRegion!!.texture.bind(0)
@@ -122,16 +124,9 @@ class ABlurGroupTest(
         shaderProgram!!.setUniformf("u_blurAmount", radiusBlur)
         shaderProgram!!.setUniformf("u_direction", dH, dV)
 
-        tmpProjectionMatrix.set(projectionMatrix)
-        projectionMatrix = camera.combined
-
-        tmpTransformMatrix.set(transformMatrix)
-        transformMatrix = identityMatrix
-
-        draw(textureRegion, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
-
-        projectionMatrix = tmpProjectionMatrix
-        transformMatrix  = tmpTransformMatrix
+        withMatrix(camera.combined, identityMatrix) {
+            draw(textureRegion, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
+        }
 
         end()
         fbo.endAdvanced(this)

@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.ScreenUtils
 import com.uxo.monax.game.utils.advanced.AdvancedGroup
 import com.uxo.monax.game.utils.disposeAll
@@ -17,19 +19,18 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
     protected var fboGroup  : FrameBuffer? = null
     protected var fboResult : FrameBuffer? = null
 
-    protected var textureGroup : TextureRegion? = null
-    protected var textureResult: TextureRegion? = null
+    var textureGroup : TextureRegion? = null
+        private set
+    var textureResult: TextureRegion? = null
+        private set
 
-    protected val tmpProjectionMatrix: Matrix4 = Matrix4()
-    protected val tmpTransformMatrix : Matrix4 = Matrix4()
-    protected val identityMatrix     : Matrix4 = Matrix4().idt()
+    protected val identityMatrix: Matrix4 = Matrix4().idt()
 
     protected var camera = OrthographicCamera()
 
     protected var combinedAlpha: Float = 1f
 
     private val fboPreRender: FboPreRender = getFboPreRender()
-
 
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
@@ -62,20 +63,22 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
     abstract fun getFboPreRender(): FboPreRender
 
     override fun preRender(batch: Batch, parentAlpha: Float) {
-        if (fboGroup == null || fboResult == null) return
+        if (fboGroup == null || fboResult == null) throw Exception("Error preRender: ${this::class.simpleName}")
 
         batch.end()
 
         combinedAlpha = this.color.a * parentAlpha
 
-        // 1. Recursively preRender children first
+        // Викликаємо PreRender спочатку у дітей
         batch.begin()
         children.begin()
         for (i in 0 until children.size) {
             val child = children[i]
-            if (child is PreRenderable) {
-                child.preRender(batch, combinedAlpha)
+
+            if (child.isVisible) {
+                renderPreRenderables(child, batch, combinedAlpha)
             }
+
         }
         children.end()
         batch.end()
@@ -121,6 +124,7 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
             val child = children[i]
 
             if (child.isVisible) child.draw(batch, parentAlpha)
+
         }
         children.end()
     }
@@ -141,20 +145,20 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
     }
 
     protected inline fun Batch.withMatrix(newProjectionMatrix: Matrix4, newTransformMatrix: Matrix4, block: () -> Unit) {
-        val oldProj = projectionMatrix.cpy()
+        val oldProj  = projectionMatrix.cpy()
         val oldTrans = transformMatrix.cpy()
         projectionMatrix = newProjectionMatrix
-        transformMatrix = newTransformMatrix
+        transformMatrix  = newTransformMatrix
         block()
         projectionMatrix = oldProj
-        transformMatrix = oldTrans
+        transformMatrix  = oldTrans
     }
 
     open fun FrameBuffer.endAdvanced(batch: Batch) {
         end()
         stage.viewport.apply()
 
-        batch.color = Color.WHITE
+        batch.color  = Color.WHITE
         batch.shader = null
     }
 

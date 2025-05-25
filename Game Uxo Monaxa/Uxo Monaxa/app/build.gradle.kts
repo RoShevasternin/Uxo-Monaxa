@@ -12,8 +12,8 @@ android {
         applicationId = "com.uxo.monax"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "2.0.0"
+        versionCode = 10
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,8 +60,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
-    implementation("androidx.datastore:datastore-preferences:1.1.4")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     val gdxVersion = "1.13.1"
     implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
@@ -77,11 +77,11 @@ dependencies {
 
     implementation("space.earlygrey:shapedrawer:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    implementation("com.google.android.gms:play-services-ads:24.2.0")
+    implementation("com.google.android.gms:play-services-ads:24.3.0")
     implementation("com.android.billingclient:billing-ktx:7.1.1")
-    implementation("com.google.android.gms:play-services-games-v2:+")
+    implementation("com.google.android.gms:play-services-games-v2:20.1.2")
 }
 
 tasks.register("copyAndroidNatives") {
