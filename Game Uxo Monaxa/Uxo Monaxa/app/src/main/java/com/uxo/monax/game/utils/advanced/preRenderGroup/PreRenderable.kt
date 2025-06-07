@@ -9,10 +9,13 @@ interface PreRenderable {
 }
 
 fun renderPreRenderables(actor: Actor, batch: Batch, parentAlpha: Float) {
-    when(actor) {
+    if (actor.isVisible.not()) return
+
+    when (actor) {
         is PreRenderable -> {
             actor.preRender(batch, parentAlpha)
         }
+
         is Group -> {
             actor.children.forEach { renderPreRenderables(it, batch, it.color.a) }
         }

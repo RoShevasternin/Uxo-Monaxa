@@ -34,7 +34,13 @@ open class ABlurGroupTest(
     private var textureBlurV : TextureRegion? = null
     private var textureBlurH : TextureRegion? = null
 
+    private var isBlurEnabled = false
+
     var radiusBlur = 0f
+        set(value) {
+            isBlurEnabled = (value != 0f)
+            field = value
+        }
 
     override fun addActorsOnGroup() {
         createShaders()
@@ -59,6 +65,8 @@ open class ABlurGroupTest(
         }
 
         override fun applyEffect(batch: Batch, combinedAlpha: Float) {
+            if (isBlurEnabled.not()) return
+
             batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
             batch.applyBlur(fboBlurH, textureGroup, 1f, 0f)
@@ -75,7 +83,7 @@ open class ABlurGroupTest(
         }
 
         override fun renderFboResult(batch: Batch, combinedAlpha: Float) {
-            batch.draw(textureBlurV, 0f, 0f, width, height)
+            batch.draw(if (isBlurEnabled) textureBlurV else textureGroup, 0f, 0f, width, height)
         }
     }
 

@@ -1,22 +1,34 @@
 package com.uxo.monax.game.screens.test.blur
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.ScreenUtils
 import com.uxo.monax.game.utils.actor.getTopParent
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
-import com.uxo.monax.game.utils.disposeAll
+import com.uxo.monax.game.utils.advanced.preRenderGroup.FboPreRender
+import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
 
-class ABackgroundBlurGroupTest(
+class AMaskBlurBackgroundGroup(
     override val screen: AdvancedScreen,
-): ABlurGroupTest(screen) {
+    private val maskTexture: Texture? = null
+): PreRenderableGroup() {
+
+    companion object {
+        private var vertexShader       = Gdx.files.internal("shader/defaultVS.glsl").readString()
+        private var fragmentShaderBlur = Gdx.files.internal("shader/gaussianBlurFS.glsl").readString()
+        private var fragmentShaderMask = Gdx.files.internal("shader/maskFS.glsl").readString()
+    }
+
+    private var shaderProgramBlur: ShaderProgram? = null
+    private var shaderProgramMask: ShaderProgram? = null
 
     private var fboSceneBack: FrameBuffer?   = null
     private var fboSceneUI  : FrameBuffer?   = null
@@ -26,15 +38,57 @@ class ABackgroundBlurGroupTest(
     private var textureSceneUI  : TextureRegion? = null
     private var textureScene    : TextureRegion? = null
 
+    private var isBlurEnabled = false
+
+    var radiusBlur = 0f
+        set(value) {
+            isBlurEnabled = (value != 0f)
+            field = value
+        }
+
     private val groupPosition = Vector2()
     private val tmpVector2    = Vector2(0f, 0f)
 
     override fun addActorsOnGroup() {
+        createShaders()
         createFrameBuffer()
-        super.addActorsOnGroup()
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (isBlurEnabled) super.draw(batch, parentAlpha)
+    }
+
+    override fun getFboPreRender() = object : FboPreRender {
+        override fun renderFboGroup(batch: Batch, combinedAlpha: Float) {}
+
+        override fun applyEffect(batch: Batch, combinedAlpha: Float) {
+            if (isBlurEnabled.not()) return
+
+            batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+            batch.applyBlur(fboSceneBack, textureScene, 1f, 0f)
+            batch.applyBlur(fboSceneUI, textureSceneBack, 0f, 1f)
+
+            batch.applyBlur(fboSceneBack, textureSceneUI, 0.707f, 0.707f)
+            batch.applyBlur(fboSceneUI, textureSceneBack, -0.707f, -0.707f)
+
+            batch.applyBlur(fboSceneBack, textureSceneUI, 0.383f, 0.924f)
+            batch.applyBlur(fboSceneUI, textureSceneBack, 0.924f, 0.383f)
+
+            //batch.applyBlur(fboBlurH, textureBlurV, 1f, 0f)
+            //batch.applyBlur(fboBlurV, textureBlurH, 0f, 1f)
+
+            if (maskTexture != null) batch.applyMask(fboSceneBack!!)
+        }
+
+        override fun renderFboResult(batch: Batch, combinedAlpha: Float) {
+            batch.draw(if (maskTexture == null) textureSceneUI else textureSceneBack, 0f, 0f, width, height)
+        }
     }
 
     override fun preRender(batch: Batch, parentAlpha: Float) {
+        if (isBlurEnabled.not()) return
+
         if (fboSceneBack == null || fboSceneUI == null || fboScene == null) throw Exception("Error preRender: ${this::class.simpleName}")
 
         batch.end()
@@ -43,8 +97,6 @@ class ABackgroundBlurGroupTest(
         captureScreenUI(batch)
         captureScreenAll(batch)
 
-        textureRegionBlur = textureScene
-
         batch.begin()
 
         super.preRender(batch, parentAlpha)
@@ -52,10 +104,26 @@ class ABackgroundBlurGroupTest(
 
     override fun dispose() {
         super.dispose()
-        disposeAll(fboSceneBack, fboSceneUI, fboScene)
+        //disposeAll(fboSceneBack, fboSceneUI, fboScene)
     }
 
     // Logic ------------------------------------------------------------------------
+
+    private fun createShaders() {
+        ShaderProgram.pedantic = true
+
+        shaderProgramBlur = ShaderProgram(vertexShader, fragmentShaderBlur)
+        shaderProgramMask = ShaderProgram(vertexShader, fragmentShaderMask)
+
+        fun throwException(shaderProgram: ShaderProgram?) {
+            throw IllegalStateException("shader compilation failed:\n" + shaderProgram?.log)
+        }
+
+        when {
+            shaderProgramBlur?.isCompiled == false -> throwException(shaderProgramBlur)
+            shaderProgramMask?.isCompiled == false -> throwException(shaderProgramMask)
+        }
+    }
 
     override fun createFrameBuffer() {
         super.createFrameBuffer()
@@ -159,6 +227,61 @@ class ABackgroundBlurGroupTest(
 
         batch.end()
         fboScene!!.endAdvanced(batch)
+    }
+
+    private fun Batch.applyBlur(fbo: FrameBuffer?, textureRegion: TextureRegion?, dH: Float, dV: Float) {
+        fbo!!.begin()
+        ScreenUtils.clear(Color.CLEAR, true)
+        begin()
+
+        shader = shaderProgramBlur
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0)
+        textureRegion!!.texture.bind(0)
+        shaderProgramBlur!!.setUniformi("u_texture", 0)
+        shaderProgramBlur!!.setUniformf("u_groupSize", fbo.width.toFloat(), fbo.height.toFloat())
+        shaderProgramBlur!!.setUniformf("u_blurAmount", radiusBlur)
+        shaderProgramBlur!!.setUniformf("u_direction", dH, dV)
+
+        withMatrix(camera.combined, identityMatrix) {
+            draw(textureRegion, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
+        }
+
+        end()
+        fbo.endAdvanced(this)
+    }
+
+    private fun Batch.applyMask(fbo: FrameBuffer) {
+        fbo.begin()
+        ScreenUtils.clear(Color.CLEAR, true)
+        begin()
+
+        setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+        shader = shaderProgramMask
+
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1)
+        maskTexture!!.bind(1)
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0)
+        textureSceneUI!!.texture.bind(0)
+
+        shaderProgramMask!!.setUniformi("u_mask", 1)
+        shaderProgramMask!!.setUniformi("u_texture", 0)
+
+        withMatrix(camera.combined, identityMatrix) {
+            //draw(textureSceneUI, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
+
+            draw(
+                textureSceneUI,
+                0f, 0f,
+                originX, originY,
+                width, height,
+                scaleX, scaleY,
+                -45f,
+            )
+        }
+
+        end()
+        fbo.endAdvanced(this)
     }
 
 }

@@ -10,12 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
-import com.uxo.monax.game.actors.ATmpGroup
 import com.uxo.monax.game.actors.shader.AMaskGroup
 import com.uxo.monax.game.screens.test.blur.ABackgroundBlurGroupTest
 import com.uxo.monax.game.screens.test.blur.ABlurGroupTest
+import com.uxo.monax.game.screens.test.blur.AMaskBlurBackgroundGroup
 import com.uxo.monax.game.utils.Acts
-import com.uxo.monax.game.utils.advanced.AdvancedGroup
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.advanced.AdvancedStage
 import com.uxo.monax.game.utils.font.FontParameter
@@ -23,7 +22,7 @@ import com.uxo.monax.game.utils.gdxGame
 import com.uxo.monax.game.utils.runGDX
 import kotlinx.coroutines.launch
 
-class TestScreen_BlurBackground: AdvancedScreen() {
+class TestScreen_BlurBackground2: AdvancedScreen() {
 
     private val parameter = FontParameter().setCharacters(FontParameter.CharType.NUMBERS.chars + "FPS:")
     private val font70    = fontGenerator_SansitaOne.generateFont(parameter.setSize(70))
@@ -35,7 +34,7 @@ class TestScreen_BlurBackground: AdvancedScreen() {
     private val imgBtn   = Image(gdxGame.assetsAll.menu_press)
     private val imgTest  = Image(gdxGame.assetsAll.purchase_def)
 
-    private val shaderGroup = ABackgroundBlurGroupTest(this) //ABlurGroupTest(this)
+    private val shaderGroup = /*ABlurGroupTest(this)*/ AMaskBlurBackgroundGroup(this, gdxGame.assetsAll.MASK)
 
     override fun show() {
         //setBackBackground(gdxGame.assetsLoader.BACKGROUND.region)
@@ -101,16 +100,16 @@ class TestScreen_BlurBackground: AdvancedScreen() {
     }
 
     private fun AdvancedStage.addShaderBack() {
-        val maskGroup = ABlurGroupTest(this@TestScreen_BlurBackground)
+        val maskGroup = AMaskGroup(this@TestScreen_BlurBackground2)
         addActor(maskGroup)
         maskGroup.setBounds(50f, 50f, 700f, 300f)
         //tmpG.color.a = 0.25f
         maskGroup.debug()
-        shaderGroup.setBounds(0f, 0f, 400f, 400f)
-        maskGroup.addActor(shaderGroup)
+        //shaderGroup.setBounds(0f, 0f, 400f, 400f)
+        //maskGroup.addActor(shaderGroup)
 
-        //addActor(shaderGroup)
-        //shaderGroup.setBounds(190f, 65f, 700f, 700f)
+        addActor(shaderGroup)
+        shaderGroup.setBounds(190f, 65f, 700f, 700f)
         shaderGroup.debug()
         //shaderGroup.color.a = 0.5f
 
@@ -120,7 +119,7 @@ class TestScreen_BlurBackground: AdvancedScreen() {
         //maskGroup.animationTEST()
 
         val child = Image(gdxGame.assetsAll.purchase_def)
-        shaderGroup.addAndFillActor(child)
+        //shaderGroup.addAndFillActor(child)
 
         val child2 = Image(gdxGame.assetsAll.purchase_def)
         addActor(child2)
@@ -131,7 +130,7 @@ class TestScreen_BlurBackground: AdvancedScreen() {
         //shaderGroup.addActor(child)
         //child.setBounds(100f, 100f, 200f, 200f)
 
-        //child.color.a = 0.5f
+        child.color.a = 0.5f
         //imgBtn.color.a = 0.5f
 
         coroutine?.launch {

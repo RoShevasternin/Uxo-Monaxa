@@ -3,6 +3,7 @@ package com.uxo.monax.game.utils.actor
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -92,6 +93,18 @@ fun Actor.setOnClickListenerWithBlock(
             }
         }
     })
+}
+
+fun Actor.getTopParent(root: Group): Group {
+    var top = this.parent
+
+    if (top == root) return root
+
+    while (top.parent != root) {
+        top = top.parent
+    }
+
+    return top
 }
 
 fun Actor.disable() = when(this) {

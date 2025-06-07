@@ -5,6 +5,7 @@ import com.uxo.monax.game.screens.GameScreen
 import com.uxo.monax.game.screens.LoaderScreen
 import com.uxo.monax.game.screens.MenuScreen
 import com.uxo.monax.game.screens.test.TestScreen_BlurBackground
+import com.uxo.monax.game.screens.test.TestScreen_BlurBackground2
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.gdxGame
 import com.uxo.monax.game.utils.runGDX
@@ -37,7 +38,7 @@ class NavigationManager {
         MenuScreen  ::class.java.name -> MenuScreen()
 
         TestScreen_BlurBackground::class.java.name -> TestScreen_BlurBackground()
-//        TestScreen_Blur::class.java.name -> TestScreen_Blur()
+        TestScreen_BlurBackground2::class.java.name -> TestScreen_BlurBackground2()
 
         else -> GameScreen()
     }

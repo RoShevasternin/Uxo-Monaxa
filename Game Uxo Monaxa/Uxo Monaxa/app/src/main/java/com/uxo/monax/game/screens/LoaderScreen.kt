@@ -7,6 +7,7 @@ import com.uxo.monax.game.manager.ParticleEffectManager
 import com.uxo.monax.game.manager.SoundManager
 import com.uxo.monax.game.manager.SpriteManager
 import com.uxo.monax.game.screens.test.TestScreen_BlurBackground
+import com.uxo.monax.game.screens.test.TestScreen_BlurBackground2
 import com.uxo.monax.game.utils.*
 import com.uxo.monax.game.utils.actor.animHide
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
@@ -154,7 +155,7 @@ class LoaderScreen : AdvancedScreen() {
             //gdxGame.currentBackground = gdxGame.assetsLoader.BACKGROUND
 
             hideScreen {
-                gdxGame.navigationManager.navigate(TestScreen_BlurBackground::class.java.name)
+                gdxGame.navigationManager.navigate(TestScreen_BlurBackground2::class.java.name)
             }
         }
     }

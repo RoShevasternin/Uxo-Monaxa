@@ -4,12 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.ScreenUtils
 import com.uxo.monax.game.utils.advanced.AdvancedGroup
 import com.uxo.monax.game.utils.disposeAll
@@ -34,7 +32,8 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
 
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (batch == null) return
+        if (isVisible.not()) return
+        if (batch == null) throw Exception("Error draw: ${this::class.simpleName}")
 
         batch.end()
         batch.begin()
@@ -74,11 +73,7 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
         children.begin()
         for (i in 0 until children.size) {
             val child = children[i]
-
-            if (child.isVisible) {
-                renderPreRenderables(child, batch, combinedAlpha)
-            }
-
+            renderPreRenderables(child, batch, combinedAlpha)
         }
         children.end()
         batch.end()
@@ -122,9 +117,7 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
         children.begin()
         for (i in 0 until children.size) {
             val child = children[i]
-
             if (child.isVisible) child.draw(batch, parentAlpha)
-
         }
         children.end()
     }
@@ -145,8 +138,8 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
     }
 
     protected inline fun Batch.withMatrix(newProjectionMatrix: Matrix4, newTransformMatrix: Matrix4, block: () -> Unit) {
-        val oldProj  = projectionMatrix.cpy()
-        val oldTrans = transformMatrix.cpy()
+        val oldProj  = projectionMatrix
+        val oldTrans = transformMatrix
         projectionMatrix = newProjectionMatrix
         transformMatrix  = newTransformMatrix
         block()
