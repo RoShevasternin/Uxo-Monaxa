@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
+import com.uxo.monax.game.actors.shader.AMaskGroup
 import com.uxo.monax.game.actors.shader.AMaskGroupForScrollPane
 import com.uxo.monax.game.utils.advanced.AdvancedGroup
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
@@ -24,7 +25,7 @@ class AProgressAudio(
 
     private val imgProgress = Image(gdxGame.assetsAll.progress)
     private val lblPercent  = Label("", ls60)
-    private val mask        = AMaskGroupForScrollPane(screen, gdxGame.assetsAll.PROGRESS_MASK)
+    private val mask        = AMaskGroup(screen, gdxGame.assetsAll.PROGRESS_MASK)
 
     private val onePercentX = LENGTH / 100f
 

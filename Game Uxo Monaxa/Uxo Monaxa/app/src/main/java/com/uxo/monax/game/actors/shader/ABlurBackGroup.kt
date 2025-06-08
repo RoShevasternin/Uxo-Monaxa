@@ -1,4 +1,4 @@
-package com.uxo.monax.game.screens.test.blur
+package com.uxo.monax.game.actors.shader
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -16,7 +16,7 @@ import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.advanced.preRenderGroup.FboPreRender
 import com.uxo.monax.game.utils.advanced.preRenderGroup.PreRenderableGroup
 
-class AMaskBlurBackgroundGroup(
+class ABlurBackGroup(
     override val screen: AdvancedScreen,
     private val maskTexture: Texture? = null
 ): PreRenderableGroup() {
@@ -33,12 +33,20 @@ class AMaskBlurBackgroundGroup(
     private var fboSceneBack: FrameBuffer?   = null
     private var fboSceneUI  : FrameBuffer?   = null
     private var fboScene    : FrameBuffer?   = null
+    private var fboMask     : FrameBuffer?   = null
 
     private var textureSceneBack: TextureRegion? = null
     private var textureSceneUI  : TextureRegion? = null
     private var textureScene    : TextureRegion? = null
+    private var textureMask     : TextureRegion? = null
 
     private var isBlurEnabled = false
+
+    var rotateMask = 0f
+        private set
+
+    var scaleMaskX = 1f
+    var scaleMaskY = 1f
 
     var radiusBlur = 0f
         set(value) {
@@ -78,7 +86,10 @@ class AMaskBlurBackgroundGroup(
             //batch.applyBlur(fboBlurH, textureBlurV, 1f, 0f)
             //batch.applyBlur(fboBlurV, textureBlurH, 0f, 1f)
 
-            if (maskTexture != null) batch.applyMask(fboSceneBack!!)
+            if (maskTexture != null) {
+                batch.prepareMask(fboMask!!)
+                batch.applyMask(fboSceneBack!!)
+            }
         }
 
         override fun renderFboResult(batch: Batch, combinedAlpha: Float) {
@@ -107,6 +118,53 @@ class AMaskBlurBackgroundGroup(
         //disposeAll(fboSceneBack, fboSceneUI, fboScene)
     }
 
+    // rotate | scale - Only mask ------------------------------------------------------------
+
+    override fun getRotation() = 0f
+    override fun setRotation(degrees: Float) {
+        rotateMask = degrees
+    }
+    override fun rotateBy(amountInDegrees: Float) {
+        rotateMask += amountInDegrees
+    }
+
+    override fun getScaleX(): Float = 1f
+    override fun getScaleY(): Float = 1f
+
+    override fun setScaleX(scaleX: Float) {
+        scaleMaskX = scaleX
+        scaleChanged()
+    }
+
+    override fun setScaleY(scaleY: Float) {
+        scaleMaskY = scaleY
+        scaleChanged()
+    }
+
+    override fun setScale(scaleX: Float, scaleY: Float) {
+        scaleMaskX = scaleX
+        scaleMaskY = scaleY
+        scaleChanged()
+    }
+
+    override fun scaleBy(scaleX: Float, scaleY: Float) {
+        scaleMaskX += scaleX
+        scaleMaskY += scaleY
+        scaleChanged()
+    }
+
+    override fun scaleBy(scale: Float) {
+        scaleMaskX += scale
+        scaleMaskY += scale
+        scaleChanged()
+    }
+
+    override fun setScale(scale: Float) {
+        scaleMaskX = scale
+        scaleMaskY = scale
+        scaleChanged()
+    }
+
     // Logic ------------------------------------------------------------------------
 
     private fun createShaders() {
@@ -131,10 +189,12 @@ class AMaskBlurBackgroundGroup(
         fboSceneBack = FrameBuffer(Pixmap.Format.RGBA8888, width.toInt(), height.toInt(), false)
         fboSceneUI   = FrameBuffer(Pixmap.Format.RGBA8888, width.toInt(), height.toInt(), false)
         fboScene     = FrameBuffer(Pixmap.Format.RGBA8888, width.toInt(), height.toInt(), false)
+        fboMask      = FrameBuffer(Pixmap.Format.RGBA8888, width.toInt(), height.toInt(), false)
 
         textureSceneBack = TextureRegion(fboSceneBack!!.colorBufferTexture).apply { flip(false, true) }
         textureSceneUI   = TextureRegion(fboSceneUI!!.colorBufferTexture).apply { flip(false, true) }
         textureScene     = TextureRegion(fboScene!!.colorBufferTexture).apply { flip(false, true) }
+        textureMask      = TextureRegion(fboMask!!.colorBufferTexture).apply { flip(false, true) }
     }
 
     private fun captureScreenBack(batch: Batch) {
@@ -260,7 +320,7 @@ class AMaskBlurBackgroundGroup(
         shader = shaderProgramMask
 
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1)
-        maskTexture!!.bind(1)
+        textureMask!!.texture.bind(1)
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0)
         textureSceneUI!!.texture.bind(0)
 
@@ -268,15 +328,29 @@ class AMaskBlurBackgroundGroup(
         shaderProgramMask!!.setUniformi("u_texture", 0)
 
         withMatrix(camera.combined, identityMatrix) {
-            //draw(textureSceneUI, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
+            draw(textureSceneUI, 0f, 0f, fbo.width.toFloat(), fbo.height.toFloat())
+        }
 
+        end()
+        fbo.endAdvanced(this)
+    }
+
+    private fun Batch.prepareMask(fbo: FrameBuffer) {
+        fbo.begin()
+        ScreenUtils.clear(Color.CLEAR, true)
+        begin()
+
+        withMatrix(camera.combined, identityMatrix) {
             draw(
-                textureSceneUI,
+                maskTexture!!,
                 0f, 0f,
                 originX, originY,
                 width, height,
-                scaleX, scaleY,
-                -45f,
+                scaleMaskX, scaleMaskY,
+                rotateMask,
+                0, 0,
+                maskTexture.width, maskTexture.height,
+                false, false
             )
         }
 

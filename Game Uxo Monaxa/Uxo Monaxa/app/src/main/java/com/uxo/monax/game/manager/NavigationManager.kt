@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.uxo.monax.game.screens.GameScreen
 import com.uxo.monax.game.screens.LoaderScreen
 import com.uxo.monax.game.screens.MenuScreen
-import com.uxo.monax.game.screens.test.TestScreen_BlurBackground
-import com.uxo.monax.game.screens.test.TestScreen_BlurBackground2
 import com.uxo.monax.game.utils.advanced.AdvancedScreen
 import com.uxo.monax.game.utils.gdxGame
 import com.uxo.monax.game.utils.runGDX
@@ -36,9 +34,6 @@ class NavigationManager {
         LoaderScreen::class.java.name -> LoaderScreen()
         GameScreen  ::class.java.name -> GameScreen()
         MenuScreen  ::class.java.name -> MenuScreen()
-
-        TestScreen_BlurBackground::class.java.name -> TestScreen_BlurBackground()
-        TestScreen_BlurBackground2::class.java.name -> TestScreen_BlurBackground2()
 
         else -> GameScreen()
     }

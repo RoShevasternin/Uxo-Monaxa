@@ -35,6 +35,8 @@
             override fun applyEffect(batch: Batch, combinedAlpha: Float) {}
 
             override fun renderFboResult(batch: Batch, combinedAlpha: Float) {
+                batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+                
                 if (maskTexture != null) {
                     batch.shader = shaderProgram
 

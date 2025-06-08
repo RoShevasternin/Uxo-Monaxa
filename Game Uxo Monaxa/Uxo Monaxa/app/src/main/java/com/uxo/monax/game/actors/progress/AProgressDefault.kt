@@ -1,11 +1,10 @@
-package com.uxo.monax.game.screens.test
+package com.uxo.monax.game.actors.progress
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
 import com.uxo.monax.game.actors.shader.AMaskGroup
 import com.uxo.monax.game.utils.actor.disable
@@ -21,7 +20,7 @@ class AProgressDefault(override val screen: AdvancedScreen): AdvancedGroup() {
     private val parameter = FontParameter().setCharacters(FontParameter.CharType.NUMBERS.chars + "%")
     private val font80    = screen.fontGenerator_SansitaOne.generateFont(parameter.setSize(70))
 
-    private val labelStyle80 = LabelStyle(font80, Color.valueOf("A82800"))
+    private val labelStyle80 = Label.LabelStyle(font80, Color.valueOf("A82800"))
 
     private val LENGTH = 700f
 

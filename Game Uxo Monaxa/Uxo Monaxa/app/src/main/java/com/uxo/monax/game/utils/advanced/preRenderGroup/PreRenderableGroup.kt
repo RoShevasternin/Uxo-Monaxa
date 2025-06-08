@@ -38,7 +38,7 @@ abstract class PreRenderableGroup: AdvancedGroup(), PreRenderable {
         batch.end()
         batch.begin()
 
-        batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
+        //batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
         batch.draw(
             textureResult,
