@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), AndroidFragmentApplication.Callbacks {
         playGamesHelper = PlayGamesHelper(this)
 
         handleBillingPurchase()
-        //initializeAdMob()
+        initializeAdMob()
     }
 
     override fun exit() {

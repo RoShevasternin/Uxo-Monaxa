@@ -12,8 +12,8 @@ android {
         applicationId = "com.uxo.monax"
         minSdk = 24
         targetSdk = 35
-        versionCode = 10
-        versionName = "3.0.0"
+        versionCode = 11
+        versionName = "3.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -79,7 +79,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    implementation("com.google.android.gms:play-services-ads:24.3.0")
+    implementation("com.google.android.gms:play-services-ads:24.4.0")
     implementation("com.android.billingclient:billing-ktx:7.1.1")
     implementation("com.google.android.gms:play-services-games-v2:20.1.2")
 }

@@ -144,7 +144,7 @@ class LoaderScreen : AdvancedScreen() {
         if (isFinishProgress) {
             isFinishProgress = false
 
-            //MusicPlayer().startPlayMusic()
+            MusicPlayer().startPlayMusic()
 
 //            game.musicUtil.apply { music = main.apply {
 //                isLooping = true

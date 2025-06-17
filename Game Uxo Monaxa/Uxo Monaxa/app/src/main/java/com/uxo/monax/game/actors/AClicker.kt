@@ -40,6 +40,8 @@ class AClicker(
 
     var blockClick = {}
 
+    private var clickCount = 0
+
     override fun addActorsOnGroup() {
         addImgPanel()
         addImgItem()
@@ -53,15 +55,21 @@ class AClicker(
                 Gdx.input.vibrate(100)
 
                 animClick(x, y)
-                gdxGame.ds_Balance.update {
-                    gdxGame.activity.playGamesHelper.submitScore((it + 1).toLong())
-                    it + 1
-                }
 
+                clickCount++
                 blockClick()
             }
         ) {
 
+        }
+    }
+
+    override fun dispose() {
+        super.dispose()
+
+        gdxGame.ds_Balance.update { clicks ->
+            gdxGame.activity.playGamesHelper.submitScore((clicks + clickCount).toLong())
+            clicks + clickCount
         }
     }
 
